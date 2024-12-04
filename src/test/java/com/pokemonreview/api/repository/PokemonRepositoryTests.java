@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
 import java.util.List;
@@ -17,7 +18,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
-@TestPropertySource(locations = "classpath:/application-test.properties")
+//@TestPropertySource(locations = "classpath:application-test.properties")
+@ActiveProfiles("test")
+@TestPropertySource({"classpath:/application-test.properties"})
 public class PokemonRepositoryTests {
 
     @Autowired
@@ -35,8 +38,7 @@ public class PokemonRepositoryTests {
 
         //Assert
         assertThat(savedPokemon).isNotNull();
-        assertThat(savedPokemon.getId())
-                .isGreaterThan(0);
+        assertThat(savedPokemon.getId()).isGreaterThan(0);
 
     }
 
@@ -72,7 +74,8 @@ public class PokemonRepositoryTests {
 
         Pokemon savedPokemon = pokemonRepository
                 .findById(pokemon.getId())  //Optional<Pokemon>
-                .get();
+                .orElseThrow();
+                //.get();  //Optional<T> T가 Null 이면 NoSuchElementException 발생함
 
         assertThat(savedPokemon).isNotNull();
         assertThat(savedPokemon.getName()).isEqualTo("Pikachu");
@@ -89,7 +92,8 @@ public class PokemonRepositoryTests {
 
         Pokemon existPokemon = pokemonRepository
                 .findByType(pokemon.getType())
-                .get();
+                .orElseThrow();
+                //.get();
 
         assertThat(existPokemon).isNotNull();
         assertThat(existPokemon.getType().name()).isEqualTo(PokemonType.ELECTRIC.name());
@@ -104,16 +108,18 @@ public class PokemonRepositoryTests {
 
         pokemonRepository.save(pokemon);
 
-				Pokemon pokemonSave = pokemonRepository
+        Pokemon pokemonSave = pokemonRepository
                 .findById(pokemon.getId())
-                .get();
+                .orElseThrow();
+                //.get();
+
+        //Setter Method 호출 - Dirty Checking
         pokemonSave.setName("Raichu");
         pokemonSave.setType(PokemonType.NORMAL);        
 
         assertThat(pokemonSave.getName()).isEqualTo("Raichu");
         assertThat(pokemonSave.getType()).isEqualTo(PokemonType.NORMAL);
 
-        System.out.println("pokemonSave = " + pokemonSave);
     }
 
     @Test
