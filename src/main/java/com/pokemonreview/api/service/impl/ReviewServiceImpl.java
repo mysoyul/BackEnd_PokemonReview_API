@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -58,7 +59,8 @@ public class ReviewServiceImpl implements ReviewService {
         List<Review> reviews = reviewRepository.findByPokemonId(pokemonId);
 
         return reviews.stream()
-                .map(review -> mapToDto(review))
+                //.map(review -> mapToDto(review))
+                .map(this::mapToDto)
                 .toList();
     }
 
@@ -68,11 +70,11 @@ public class ReviewServiceImpl implements ReviewService {
 
         Review review = getExistReview(reviewId);
 
-        if(review.getPokemon().getId() != pokemon.getId()) {
+        //if(review.getPokemon().getId() != pokemon.getId()) {
+        if(!Objects.equals(review.getPokemon().getId(), pokemon.getId())) {
             throw new ResourceNotFoundException(
                     "This review does not belong to a pokemon");
         }
-
         return mapToDto(review);
     }
 
@@ -84,17 +86,17 @@ public class ReviewServiceImpl implements ReviewService {
 
         Review review = getExistReview(reviewId);
 
-        if(review.getPokemon().getId() != pokemon.getId()) {
+        if(!Objects.equals(review.getPokemon().getId(), pokemon.getId())) {
             throw new ResourceNotFoundException(
                     "This review does not belong to a pokemon");
         }
 
+        //Dirty Checking
         review.setTitle(reviewDto.getTitle());
         review.setContent(reviewDto.getContent());
         review.setStars(reviewDto.getStars());
 
         //Review updateReview = reviewRepository.save(review);
-
         return mapToDto(review);
     }
 
@@ -104,7 +106,7 @@ public class ReviewServiceImpl implements ReviewService {
 
         Review review = getExistReview(reviewId);
 
-        if(review.getPokemon().getId() != pokemon.getId()) {
+        if(!review.getPokemon().getId().equals(pokemon.getId())) {
             throw new ResourceNotFoundException(
                     "This review does not belong to a pokemon");
         }
