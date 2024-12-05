@@ -9,6 +9,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,6 +19,7 @@ import java.util.stream.IntStream;
 @Profile("local")
 public class AppConfig {
     @Bean
+    @Order(1)
     public CommandLineRunner test(PokemonRepository pokemonRepository,
                                   ReviewRepository reviewRepository) {
         return args -> {
