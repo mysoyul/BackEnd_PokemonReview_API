@@ -7,6 +7,7 @@ import com.pokemonreview.api.security.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 import java.util.Collections;
 
 @Component
+@Profile("local")
 @Order(2)
 public class UserRoleInsertRunner implements ApplicationRunner {
     @Autowired
