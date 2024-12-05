@@ -43,6 +43,7 @@ public class AuthController {
                         loginDto.getUsername(),
                         loginDto.getPassword())
         );
+        //인증정보를 포함하고 있는 Authentication 객체를 SecurityContext 에 저장한다.
         SecurityContextHolder.getContext().setAuthentication(authentication);
         //token 생성
         String token = jwtGenerator.generateToken(authentication);
@@ -52,10 +53,13 @@ public class AuthController {
 
         Optional<UserEntity> optionalUser =
                 userRepository.findByUsername(loginDto.getUsername());
-        if(optionalUser.isPresent()){
-            UserEntity userEntity = optionalUser.get();
-            authResponseDTO.setRole(userEntity.getRoles().get(0).getName());
-        }
+        optionalUser.ifPresent(
+                userEntity -> authResponseDTO.setRole(userEntity.getRoles().get(0).getName())
+        );
+//        if(optionalUser.isPresent()){
+//            UserEntity userEntity = optionalUser.get();
+//            authResponseDTO.setRole(userEntity.getRoles().get(0).getName());
+//        }
         return new ResponseEntity<>(authResponseDTO, HttpStatus.OK);
     }
 
